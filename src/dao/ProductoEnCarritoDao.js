@@ -2,7 +2,7 @@
 import knexLib from "knex";
 
 class ProductoEnCarritoDao {
-  TABLE_NAME = "productosEnCarrito";
+  TABLE_NAME = "productosencarrito";
   ID_COLUMN = "id";
   CARRITO_ID_COLUMN = "carritoId";
   PRODUCTO_ID_COLUMN = "productoId";
@@ -44,10 +44,11 @@ class ProductoEnCarritoDao {
   async getAllProductsFromCart(cartId) {
     try {
       const products = await this.knex
-        .select("producto.title")
+        .select("productos.title")
         .from(this.TABLE_NAME)
-        .join("producto", "producto.id", "productosEnCarrito.productoId")
+        .join("productos", "productos.id", "productosEnCarrito.productoId")
         .where(this.CARRITO_ID_COLUMN, cartId);
+        console.log(products)
       return products;
     } catch (err) {
       console.log(err);

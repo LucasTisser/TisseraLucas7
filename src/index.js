@@ -26,7 +26,7 @@ const ProductsRouter = express.Router();
 const CartsRouter = express.Router();
 
 app.use("/api/productos", ProductsRouter);
-app.use("/api/carrito", CartsRouter);
+app.use("/api/carritos", CartsRouter);
 
 // const productDao = new ProductoDao();
 // const carritoDao = new CarritoDao();
@@ -52,34 +52,25 @@ ProductsRouter.get("/:id", async (req, res) => {
 
 // POST api/productos
 ProductsRouter.post("/", authMiddleware, async (req, res) => {
-  const { body } = req.body;
-
-  // body.timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
-
+  
+  const body = req.body;
   const newProductId = await productApi.save(body);
 
   newProductId
-    ? res
-        .status(200)
-        .json({ success: "Producto añadido con ID : " + newProductId })
-    : res
-        .status(400)
-        .json({ error: "Error al guardar. Verifique el contenido del body" });
+    ? res.status(200).json({ success: "Producto añadido con ID : " + newProductId })
+    : res.status(400).json({ error: "Error al guardar. Verifique el contenido del body" });
 });
 
 // PUT api/productos/:id
 ProductsRouter.put("/:id", authMiddleware, async (req, res, next) => {
   const { id } = req.params;
-  const { body } = req;
+  const body = req.body;
   const wasUpdated = await productApi.updateProductById(body, id);
 
   wasUpdated
     ? res.status(200).json({ Success: "Producto actualizado" })
-    : res
-        .status(404)
-        .json({
-          error: "producto no encontrado o contenido del body invalido",
-        });
+    : res.status(404).json({error: "producto no encontrado o contenido del body invalido",
+  });
 });
 
 // DELETE /api/productos/:id
@@ -121,10 +112,10 @@ CartsRouter.delete("/:id", async (req, res) => {
 
 // ------ Productos en Carritos Endpoints ----------
 
-// POST /api/carrito/:id/productos
+// POST /api/carritos/:id/productos
 CartsRouter.post("/:id/productos", async (req, res) => {
   const { id } = req.params;
-  const { body } = req;
+  const body = req.body;
 
   if (Object.prototype.hasOwnProperty.call(body, "productId")) {
     const newProductInCartId = await ProductInCartApi.saveProductToCart(
@@ -149,28 +140,28 @@ CartsRouter.post("/:id/productos", async (req, res) => {
   }
 });
 
-// DELETE /api/carrito/:id/productos/:idProd
+// DELETE /api/carrios/:id/productos/:idProd
 CartsRouter.delete("/:id/productos/:idProd", async (req, res) => {
   const { id, idProd } = req.params;
   const wasDeleted = await ProductInCartApi.deleteProductFromCart(
     id,
     idProd
   );
-
   wasDeleted
     ? res.status(200).json({ success: "Producto removido del carrito" })
     : res.status(400).json({ error: "Hubo un problema" });
 });
 
-// GET /api/carrito/:id/productos
-CartsRouter.get(":id/productos", async (req, res) => {
+// GET /api/carritos/:id/productos
+CartsRouter.get("/:id/productos", async (req, res) => {
   const { id } = req.params;
-  const cartProducts = await ProductInCartApi.getAllProductoFromCart(id);
-  if (cartProducts.length) {
+  const cartProducts = await ProductInCartApi.getAllProductsFromCart(id);
+  console.log(cartProducts)
+  // if (cartProducts.length) {
     res.status(200).json(cartProducts);
-  } else {
-    res.status(404).json({ error: "Carrito no encontrado o no hay productos" });
-  }
+  // } else {
+    // res.status(404).json({ error: "Carrito no encontrado o no hay productos" });
+  // }
 });
 
 const PORT = 8080;
