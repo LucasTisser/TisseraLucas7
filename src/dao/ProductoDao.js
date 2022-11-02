@@ -1,4 +1,3 @@
-// import { knex } from "../db.js";
 import knexLib from "knex";
 
 export class ProductoDao {
@@ -16,21 +15,15 @@ export class ProductoDao {
     } catch (err) {
       console.log(err);
     }
-    // } finally {
-    //   this.knex.destroy();
-    // }
   }
   async deleteById(id) {
     try {
-      await this.knex(this.TABLE_NAME).where({id:id}).del();
+      await this.knex(this.TABLE_NAME).where({ id: id }).del();
       console.log("Producto borrado");
       return true;
     } catch (err) {
       console.log(err);
     }
-      // } finally {
-    //   this.knex.destroy();
-    // }
   }
   async getAll() {
     try {
@@ -38,9 +31,6 @@ export class ProductoDao {
     } catch (err) {
       console.log({ "Error en getAll": err });
     }
-      // } finally {
-    //   this.knex.destroy();
-    // }
   }
   async getProductById(id) {
     try {
@@ -59,9 +49,6 @@ export class ProductoDao {
     } catch (err) {
       console.log(err);
     }
-      // } finally {
-    //   this.knex.destroy();
-    // }
   }
 }
 

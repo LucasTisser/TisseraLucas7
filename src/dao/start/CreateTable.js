@@ -1,26 +1,26 @@
-import config from "../../config.js"
-import knexLib from 'knex'
-const knex = knexLib(config)
+import config from "../../config.js";
+import knexLib from "knex";
+const knex = knexLib(config);
+
 export async function createProductoTable() {
   try {
     const isCreated = await knex.schema.hasTable("productos");
     if (isCreated) {
       console.log(" La tabla <productos> ya existe creada en la DB");
     } else {
-      knex.schema.dropTableIfExists("productos").finally(()=>{
+      knex.schema.dropTableIfExists("productos").finally(() => {
         return knex.schema.createTable("productos", (table) => {
-        table.increments("id").primary().notNullable(),
-          table.timestamp("timestamp").notNullable(),
-          table.string("title", 100).notNullable(),
-          table.float("price").notNullable(),
-          table.string("descripcion", 300),
-          table.string("code"),
-          table.string("image", 200),
-          table.integer("stock")
-      })
-      
+          table.increments("id").primary().notNullable(),
+            table.timestamp("timestamp").notNullable(),
+            table.string("title", 100).notNullable(),
+            table.float("price").notNullable(),
+            table.string("descripcion", 300),
+            table.string("code"),
+            table.string("image", 200),
+            table.integer("stock");
+        });
       });
-      console.log("La table <producto> ha sida creada");
+      console.log("La tabla <producto> ha sido creada");
     }
   } catch (err) {
     console.log(err);
@@ -33,11 +33,11 @@ export async function createCarritoTable() {
     if (isCreated) {
       console.log("La tabla <carritos> ya existe creada en la DB");
     } else {
-      knex.schema.dropTableIfExists('carritos').finally(()=>{
-      return knex.schema.createTable("carritos", (table) => {
-        table.increments("id").primary(),
-        table.timestamp("timestamp").notNullable();
-      })
+      knex.schema.dropTableIfExists("carritos").finally(() => {
+        return knex.schema.createTable("carritos", (table) => {
+          table.increments("id").primary(),
+            table.timestamp("timestamp").notNullable();
+        });
       });
       console.log("La tabla <carritos> ha sido creada");
     }
@@ -52,7 +52,7 @@ export async function createProductoEnCarritoTable() {
     if (isCreated) {
       console.log("La table <productosEnCarrito> ya existe creada en la DB");
     } else {
-      knex.schema.dropTableIfExists('productosEnCarrito').finally(()=>{
+      knex.schema.dropTableIfExists("productosEnCarrito").finally(() => {
         return knex.schema.createTable("productosEnCarrito", (table) => {
           table.increments("id").primary().notNullable(),
             // <FK carrito>
@@ -68,10 +68,31 @@ export async function createProductoEnCarritoTable() {
               .foreign("productId")
               .references("id")
               .inTable("producto")
-              .onDelete("CASCADE")
+              .onDelete("CASCADE");
         });
-      })
+      });
       console.log("La tabla <productosEnCarrito> ha sido creada");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function createMessageTable() {
+  try {
+    const isCreated = await knex.schema.hasTable("mensajes");
+    if (isCreated) {
+      console.log(" La tabla <mensajes> ya existe creada en la DB");
+    } else {
+      knex.schema.dropTableIfExists("mensajes").finally(() => {
+        return knex.schema.createTable("mensajes", (table) => {
+          table.increments("id").primary().notNullable(),
+            table.timestamp("timestamp").notNullable(),
+            table.string("nombre", 40).notNullable(),
+            table.string("mensaje", 300).notNullable();
+        });
+      });
+      console.log("La tabla <mensajes> ha sido creada");
     }
   } catch (err) {
     console.log(err);

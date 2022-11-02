@@ -1,9 +1,7 @@
-// import { knex } from "../../db.js";
-// import knex from "knex";
+import config from "../../config.js";
+import knexLib from "knex";
+const knex = knexLib(config);
 
-import config from "../../config.js"
-import knexLib from 'knex'
-const knex = knexLib(config)
 const productos = [
   {
     timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
@@ -70,6 +68,24 @@ const productoCarritoRelations = [
   },
 ];
 
+const mensajes = [
+  {
+    timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+    nombre: "Lucas",
+    mensaje: "Hola soy lucas como andas?",
+  },
+  {
+    timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+    nombre: "Ivan",
+    mensaje: "Hola soy ivan como andas?",
+  },
+  {
+    timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+    nombre: "Thomas",
+    mensaje: "Hola soy thomas como andas?",
+  },
+];
+
 export async function populateProducts() {
   try {
     await knex.insert(productos).from("productos");
@@ -92,6 +108,15 @@ export async function populateProductoEnCarrito() {
   try {
     await knex.insert(productoCarritoRelations).from("productosEnCarrito");
     console.log("Se agregaron relaciones a la tabla");
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function populateMessages() {
+  try {
+    await knex.insert(mensajes).from("mensajes");
+    console.log("Se agregaron mensajes a la tabla");
   } catch (err) {
     console.log(err);
   }

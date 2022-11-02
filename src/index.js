@@ -3,14 +3,16 @@ import dotenv from "dotenv";
 import ProductoDao from "./dao/ProductoDao.js";
 import CarritoDao from "./dao/CarritoDao.js";
 import ProductoEnCarritoDao from "./dao/ProductoEnCarritoDao.js";
-// import knex from "knex";
+import MensajesDao from "./dao/MensajesDao.js";
 import config from "./config.js";
+import configSQLite from "./configSQLite.js";
+
 dotenv.config();
 
-const productApi = new ProductoDao(config)
-const cartApi = new CarritoDao(config)
-const ProductInCartApi = new ProductoEnCarritoDao(config)
-
+const productApi = new ProductoDao(config);
+const cartApi = new CarritoDao(config);
+const ProductInCartApi = new ProductoEnCarritoDao(config);
+const MensajesApi = new MensajesDao(configSQLite);
 
 const app = express();
 app.use(express.json());
@@ -24,13 +26,11 @@ const authMiddleware = (req, res, next) => {
 
 const ProductsRouter = express.Router();
 const CartsRouter = express.Router();
+const MessagesRouter = express.Router();
 
 app.use("/api/productos", ProductsRouter);
 app.use("/api/carritos", CartsRouter);
-
-// const productDao = new ProductoDao();
-// const carritoDao = new CarritoDao();
-// const productoEnCarritoDao = new ProductoEnCarritoDao();
+app.use("/api/mensajes", MessagesRouter);
 
 // --------- Product Endpoints --------
 
@@ -52,13 +52,16 @@ ProductsRouter.get("/:id", async (req, res) => {
 
 // POST api/productos
 ProductsRouter.post("/", authMiddleware, async (req, res) => {
-  
   const body = req.body;
   const newProductId = await productApi.save(body);
 
   newProductId
-    ? res.status(200).json({ success: "Producto añadido con ID : " + newProductId })
-    : res.status(400).json({ error: "Error al guardar. Verifique el contenido del body" });
+    ? res
+        .status(200)
+        .json({ success: "Producto añadido con ID : " + newProductId })
+    : res
+        .status(400)
+        .json({ error: "Error al guardar. Verifique el contenido del body" });
 });
 
 // PUT api/productos/:id
@@ -69,8 +72,11 @@ ProductsRouter.put("/:id", authMiddleware, async (req, res, next) => {
 
   wasUpdated
     ? res.status(200).json({ Success: "Producto actualizado" })
-    : res.status(404).json({error: "producto no encontrado o contenido del body invalido",
-  });
+    : res
+        .status(404)
+        .json({
+          error: "producto no encontrado o contenido del body invalido",
+        });
 });
 
 // DELETE /api/productos/:id
@@ -127,12 +133,10 @@ CartsRouter.post("/:id/productos", async (req, res) => {
       ? res
           .status(200)
           .json({ success: "Producto añadido correctamente al carrito" })
-      : res
-          .status(400)
-          .json({
-            error:
-              "Hubo un problema. Quizas el id del carrito o el id del producto sea invalido",
-          });
+      : res.status(400).json({
+          error:
+            "Hubo un problema. Quizas el id del carrito o el id del producto sea invalido",
+        });
   } else {
     res
       .status(400)
@@ -143,10 +147,7 @@ CartsRouter.post("/:id/productos", async (req, res) => {
 // DELETE /api/carrios/:id/productos/:idProd
 CartsRouter.delete("/:id/productos/:idProd", async (req, res) => {
   const { id, idProd } = req.params;
-  const wasDeleted = await ProductInCartApi.deleteProductFromCart(
-    id,
-    idProd
-  );
+  const wasDeleted = await ProductInCartApi.deleteProductFromCart(id, idProd);
   wasDeleted
     ? res.status(200).json({ success: "Producto removido del carrito" })
     : res.status(400).json({ error: "Hubo un problema" });
@@ -156,12 +157,21 @@ CartsRouter.delete("/:id/productos/:idProd", async (req, res) => {
 CartsRouter.get("/:id/productos", async (req, res) => {
   const { id } = req.params;
   const cartProducts = await ProductInCartApi.getAllProductsFromCart(id);
-  console.log(cartProducts)
-  // if (cartProducts.length) {
+  console.log(cartProducts);
+  if (cartProducts.length) {
     res.status(200).json(cartProducts);
-  // } else {
-    // res.status(404).json({ error: "Carrito no encontrado o no hay productos" });
-  // }
+  } else {
+    res.status(404).json({ error: "Carrito no encontrado o no hay productos" });
+  }
+});
+
+// ------ Mensajes EndPoints ----------
+
+MessagesRouter.get("/", async (req, res) => {
+  // const message = req.body
+  const Messages = await MensajesApi.ReadAll();
+  console.log(Messages);
+  res.status(200).json(Messages);
 });
 
 const PORT = 8080;

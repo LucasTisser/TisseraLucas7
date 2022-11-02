@@ -1,4 +1,3 @@
-// import { knex } from "../db.js";
 import knexLib from "knex";
 
 class ProductoEnCarritoDao {
@@ -7,9 +6,9 @@ class ProductoEnCarritoDao {
   CARRITO_ID_COLUMN = "carritoId";
   PRODUCTO_ID_COLUMN = "productoId";
 
-  constructor(config){
+  constructor(config) {
     this.knex = knexLib(config);
-    }
+  }
 
   async saveProductToCart(cartId, productId) {
     const obj = {
@@ -18,7 +17,9 @@ class ProductoEnCarritoDao {
     };
 
     try {
-      const newProductInCartId = await this.knex.insert(obj).from(this.TABLE_NAME);
+      const newProductInCartId = await this.knex
+        .insert(obj)
+        .from(this.TABLE_NAME);
       console.log(
         ` producto agregado correcramente al carrito, la relacion tiene un ID: ${newProductInCartId}.`
       );
@@ -48,7 +49,7 @@ class ProductoEnCarritoDao {
         .from(this.TABLE_NAME)
         .join("productos", "productos.id", "productosEnCarrito.productoId")
         .where(this.CARRITO_ID_COLUMN, cartId);
-        console.log(products)
+      console.log(products);
       return products;
     } catch (err) {
       console.log(err);
@@ -56,4 +57,4 @@ class ProductoEnCarritoDao {
   }
 }
 
-export default ProductoEnCarritoDao
+export default ProductoEnCarritoDao;

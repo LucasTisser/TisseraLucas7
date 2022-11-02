@@ -1,14 +1,12 @@
-// import { knex } from "../db.js";
 import knexLib from "knex";
 
 export class CarritoDao {
   TABLE_NAME = "carritos";
   ID_COLUMN = "id";
 
-  constructor(config){
+  constructor(config) {
     this.knex = knexLib(config);
-    }
-
+  }
 
   async save() {
     try {
@@ -40,7 +38,6 @@ export class CarritoDao {
       console.log(err);
     }
   }
-
 }
 
-export default CarritoDao
+export default CarritoDao;
